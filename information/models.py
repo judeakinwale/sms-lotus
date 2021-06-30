@@ -1,14 +1,18 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _, templatize
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
 
 class Information(models.Model):
 
-    source = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, limit_choices_to={'is_staff': True})
+    source = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'is_staff': True}
+    )
     scope = models.ForeignKey("Scope", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     body = models.TextField()
@@ -24,7 +28,10 @@ class Information(models.Model):
 
 class Notice(models.Model):
 
-    source  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    source  = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
     scope = models.ForeignKey("Scope", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     message = models.TextField()
@@ -45,6 +52,7 @@ class Scope(models.Model):
     # course
     # programme
     # level
+    description = models.CharField(max_length=250)
     is_general = models.BooleanField(default=True)
     is_first_year = models.BooleanField(default=False)
     is_final_year = models.BooleanField(default=False)
@@ -54,7 +62,7 @@ class Scope(models.Model):
         verbose_name_plural = _("Scopes")
 
     def __str__(self):
-        return self.name
+        return self.description
 
 
 class InformationImage(models.Model):

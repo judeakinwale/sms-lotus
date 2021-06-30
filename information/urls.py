@@ -12,5 +12,5 @@ router.register('notice', views.NoticeViewSet)
 router.register('scope', views.ScopeViewSet)
 
 urlpatterns = [
-    path("", include(router.urls))
+    path("", include(router.urls)),
 ]
