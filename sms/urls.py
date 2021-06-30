@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include
 # for token authentication
 # from rest_framework_simplejwt.views import (
@@ -26,3 +28,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include('information.urls', namespace='information')),
 ]
+
+if settings.DEBUG == True:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
