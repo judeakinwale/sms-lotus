@@ -11,7 +11,7 @@ class Information(models.Model):
     source = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        limit_choices_to={'is_staff': True}
+        # limit_choices_to={'is_staff': True}
     )
     scope = models.ForeignKey("Scope", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
@@ -68,7 +68,7 @@ class Scope(models.Model):
 class InformationImage(models.Model):
 
     information = models.ForeignKey("Information", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="images/%Y/%m/%d", max_length=None)
+    image = models.ImageField(upload_to="images/%Y/%m/%d/", null=True)
     description = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 

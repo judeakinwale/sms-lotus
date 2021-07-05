@@ -9,7 +9,7 @@ from information import models, serializers
 class InformationViewSet(viewsets.ModelViewSet):
     queryset = models.Information.objects.all()
     serializer_class = serializers.InformationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         return serializer.save(source=self.request.user)
@@ -18,7 +18,7 @@ class InformationViewSet(viewsets.ModelViewSet):
 class NoticeViewSet(viewsets.ModelViewSet):
     queryset = models.Notice.objects.all()
     serializer_class = serializers.NoticeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         return serializer.save(source=self.request.user)
@@ -27,10 +27,10 @@ class NoticeViewSet(viewsets.ModelViewSet):
 class InformationImageViewSet(viewsets.ModelViewSet):
     queryset = models.InformationImage.objects.all()
     serializer_class = serializers.InformationImageSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
 
 
 class ScopeViewSet(viewsets.ModelViewSet):
     queryset = models.Scope.objects.all()
     serializer_class = serializers.ScopeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
