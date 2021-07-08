@@ -65,5 +65,3 @@ class ModelTest(TestCase):
             )
 
         self.assertEqual(str(info_img), info_img.description)
-
-
