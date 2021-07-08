@@ -1,10 +1,13 @@
 from django.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
+
 class Quiz(models.Model):
 
+    supervisor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     question_count = models.IntegerField(default=0)
     description = models.TextField(null=True, blank=True)
@@ -77,4 +80,3 @@ class Response(models.Model):
 
     def __str__(self):
         return self.question.label
-
