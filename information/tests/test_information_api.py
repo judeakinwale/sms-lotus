@@ -1,12 +1,8 @@
-from decimal import Context
-from logging import INFO, info
-import re
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.request import Request
-from rest_framework.serializers import Serializer
 from rest_framework.test import APIClient, APIRequestFactory
 from information import models, serializers
 
@@ -16,8 +12,7 @@ INFO_URL = reverse('information:information-list')
 # creating a test request
 factory = APIRequestFactory()
 request = factory.get('/')
-# create serializer contexr
-from django.db.models.fields import DecimalField
+# create serializer context
 serializer_context = {'request': Request(request)}
 
 
@@ -28,9 +23,7 @@ def info_detail_url(info_id):
 
 def sample_scope(description='General', **kwargs):
     """create and return a sample scope"""
-    defaults = {
-        # 'description': 'General',
-    }
+    defaults = {}
     defaults.update(kwargs)
     return models.Scope.objects.create(description=description, **defaults)
 
@@ -53,6 +46,18 @@ def sample_info_image(information, **kwargs):
     }
     defaults.update(kwargs)
     return models.InformationImage.create(information=information, **defaults)
+
+
+
+def test_all_model_attributes(insance, payload, model, serializer):
+    """test model attributes against a payload, with instance being self in a testcase class """
+    ignored_keys = ['image']
+    relevant_keys = sorted(set(payload.keys()).difference(ignored_keys))
+    for key in relevant_keys:
+        try:
+            insance.assertEqual(payload[key], getattr(model, key))
+        except:
+            insance.assertEqual(payload[key], serializer.data[key])
 
 
 class PublicInformationApiTest(TestCase):
@@ -124,32 +129,29 @@ class PrivateInformationApiTest(TestCase):
 
     def test_create_information(self):
         """test creating an information"""
-        serializer = serializers.ScopeSerializer(sample_scope(), context=serializer_context)
+        scope_serializer = serializers.ScopeSerializer(sample_scope(), context=serializer_context)
         payload = {
             'source': self.user,
-            'scope': serializer.data['url'],
+            'scope': scope_serializer.data['url'],
             'title': 'Test title 2',
             'body': 'body for test title 2',
         }
 
         res = self.client.post(INFO_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
         info = models.Information.objects.get(id=res.data['id'])
-        # for key in payload.keys():
-        #     self.assertEqual(payload[key], getattr(info, key))
-        self.assertEqual(payload['source'], info.source)
-        self.assertEqual(payload['title'], info.title)
-        self.assertEqual(payload['body'], info.body)
+        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        test_all_model_attributes(self, payload, info, info_serializer)
 
     def test_partial_update_information(self):
-        """test partially updating an information's detail"""
+        """test partially updating an information's detail using patch"""
         info = sample_information(source=self.user)
-        scope2 = sample_scope(description='Private', is_general=False)
-        serializer = serializers.ScopeSerializer(scope2, context=serializer_context)
+        scope = sample_scope(description='Private', is_general=False)
+        scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
         payload = {
-            'scope': serializer.data['url'],
+            'scope': scope_serializer.data['url'],
             'body': 'An updated body'
         }
 
@@ -157,7 +159,28 @@ class PrivateInformationApiTest(TestCase):
         res = self.client.patch(url, payload)
 
         info.refresh_from_db()
+        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # for key in payload.keys():
-        #     self.assertEqual(payload[key], getattr(info, key))
-        self.assertEqual(payload['body'], info.body)
+        test_all_model_attributes(self, payload, info, info_serializer)
+
+    def test_full_update_information(self):
+        """test updating an information's detail using put"""
+        info = sample_information(source=self.user)
+        scope = sample_scope(description='Private test', is_first_year=True)
+        scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
+        payload = {
+            'source': self.user,
+            'scope': scope_serializer.data['url'],
+            'title': 'Test title 3',
+            'body': 'An updated body'
+        }
+
+        url = info_detail_url(info.id)
+        res = self.client.put(url, payload)
+
+        info.refresh_from_db()
+        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        test_all_model_attributes(self, payload, info, info_serializer)
