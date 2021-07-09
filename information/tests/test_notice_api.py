@@ -7,7 +7,7 @@ from rest_framework.test import APIClient, APIRequestFactory
 from information import models, serializers
 
 
-INFO_URL = reverse('information:information-list')
+NOTICE_URL = reverse('information:notice-list')
 
 # creating a test request
 factory = APIRequestFactory()
@@ -16,9 +16,9 @@ request = factory.get('/')
 serializer_context = {'request': Request(request)}
 
 
-def info_detail_url(info_id):
-    """return url for the information detail"""
-    return reverse('information:information-detail', args=[info_id])
+def notice_detail_url(notice_id):
+    """return url for the notice detail"""
+    return reverse('information:notice-detail', args=[notice_id])
 
 
 def sample_scope(description='General', **kwargs):
@@ -28,24 +28,24 @@ def sample_scope(description='General', **kwargs):
     return models.Scope.objects.create(description=description, **defaults)
 
 
-def sample_information(source, **kwargs):
-    """create and return sample information"""
+def sample_notice(source, **kwargs):
+    """create and return sample notice"""
     defaults = {
         'scope': sample_scope(),
         'title': 'Test title',
-        'body': 'Lorem ipsum dolor sit amet',
+        'message': 'Lorem ipsum dolor sit amet',
     }
     defaults.update(kwargs)
-    return models.Information.objects.create(source=source, **defaults)
+    return models.Notice.objects.create(source=source, **defaults)
 
 
-def sample_info_image(information, **kwargs):
-    """create and return a sample info image"""
-    defaults = {
-        'description': 'sample information image'
-    }
-    defaults.update(kwargs)
-    return models.InformationImage.create(information=information, **defaults)
+# def sample_notice_image(notice, **kwargs):
+#     """create and return a sample notice image"""
+#     defaults = {
+#         'description': 'sample notice image'
+#     }
+#     defaults.update(kwargs)
+#     return models.NoticeImage.create(notice=notice, **defaults)
 
 
 
@@ -60,21 +60,21 @@ def test_all_model_attributes(insance, payload, model, serializer):
             insance.assertEqual(payload[key], serializer.data[key])
 
 
-class PublicInformationApiTest(TestCase):
-    """test public access to the information api"""
+class PublicNoticeApiTest(TestCase):
+    """test public access to the notice api"""
 
     def setUp(self):
         self.client = APIClient()
 
     def test_authentication_required(self):
         """test that authentication is required"""
-        res = self.client.get(INFO_URL)
+        res = self.client.get(NOTICE_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
         # self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class PrivateInformationApiTest(TestCase):
-    """test authenticated access to the information api"""
+class PrivateNoticeApiTest(TestCase):
+    """test authenticated access to the notice api"""
 
     def setUp(self):
         self.client = APIClient()
@@ -87,100 +87,100 @@ class PrivateInformationApiTest(TestCase):
     def tearDown(self):
         pass
 
-    def test_retrieve_information(self):
-        """test retrieving a list of information"""
-        sample_information(source=self.user)
-        info = models.Information.objects.all()
-        serializer = serializers.InformationSerializer(info, many=True, context=serializer_context)
+    def test_retrieve_notice(self):
+        """test retrieving a list of notice"""
+        sample_notice(source=self.user)
+        notice = models.Notice.objects.all()
+        serializer = serializers.NoticeSerializer(notice, many=True, context=serializer_context)
 
-        res = self.client.get(INFO_URL)
+        res = self.client.get(NOTICE_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_information_not_limited_to_source(self):
-        """test that information from all sources is returned"""
-        sample_information(source=self.user)
+    def test_notice_not_limited_to_source(self):
+        """test that notice from all sources is returned"""
+        sample_notice(source=self.user)
         user2 = get_user_model().objects.create_user(
             'test2@test.com',
             'testpass2'
         )
-        sample_information(source=user2)
+        sample_notice(source=user2)
 
-        info = models.Information.objects.all()
-        serializer = serializers.InformationSerializer(info, many=True, context=serializer_context)
+        notice = models.Notice.objects.all()
+        serializer = serializers.NoticeSerializer(notice, many=True, context=serializer_context)
         
-        res = self.client.get(INFO_URL)
+        res = self.client.get(NOTICE_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
         self.assertEqual(len(res.data), 2)
 
-    def test_retrieve_information_detail(self):
-        """test retrieving an information's detail"""
-        info = sample_information(source=self.user)
-        serializer = serializers.InformationSerializer(info, context=serializer_context)
+    def test_retrieve_notice_detail(self):
+        """test retrieving an notice's detail"""
+        notice = sample_notice(source=self.user)
+        serializer = serializers.NoticeSerializer(notice, context=serializer_context)
         
-        url = info_detail_url(info_id=info.id)
+        url = notice_detail_url(notice_id=notice.id)
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_create_information(self):
-        """test creating an information"""
+    def test_create_notice(self):
+        """test creating an notice"""
         scope_serializer = serializers.ScopeSerializer(sample_scope(), context=serializer_context)
         payload = {
             'source': self.user,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 2',
-            'body': 'body for test title 2',
+            'message': 'message for test title 2',
         }
 
-        res = self.client.post(INFO_URL, payload)
+        res = self.client.post(NOTICE_URL, payload)
 
-        info = models.Information.objects.get(id=res.data['id'])
-        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+        notice = models.Notice.objects.get(id=res.data['id'])
+        notice_serializer = serializers.NoticeSerializer(notice, context=serializer_context)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        test_all_model_attributes(self, payload, info, info_serializer)
+        test_all_model_attributes(self, payload, notice, notice_serializer)
 
-    def test_partial_update_information(self):
-        """test partially updating an information's detail using patch"""
-        info = sample_information(source=self.user)
+    def test_partial_update_notice(self):
+        """test partially updating an notice's detail using patch"""
+        notice = sample_notice(source=self.user)
         scope = sample_scope(description='Private', is_general=False)
         scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
         payload = {
             'scope': scope_serializer.data['url'],
-            'body': 'An updated body'
+            'message': 'An updated message'
         }
 
-        url = info_detail_url(info.id)
+        url = notice_detail_url(notice.id)
         res = self.client.patch(url, payload)
 
-        info.refresh_from_db()
-        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+        notice.refresh_from_db()
+        notice_serializer = serializers.NoticeSerializer(notice, context=serializer_context)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        test_all_model_attributes(self, payload, info, info_serializer)
+        test_all_model_attributes(self, payload, notice, notice_serializer)
 
-    def test_full_update_information(self):
-        """test updating an information's detail using put"""
-        info = sample_information(source=self.user)
+    def test_full_update_notice(self):
+        """test updating an notice's detail using put"""
+        notice = sample_notice(source=self.user)
         scope = sample_scope(description='Private test', is_first_year=True)
         scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
         payload = {
             'source': self.user,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 3',
-            'body': 'An updated body'
+            'message': 'An updated message'
         }
 
-        url = info_detail_url(info.id)
+        url = notice_detail_url(notice.id)
         res = self.client.put(url, payload)
 
-        info.refresh_from_db()
-        info_serializer = serializers.InformationSerializer(info, context=serializer_context)
+        notice.refresh_from_db()
+        notice_serializer = serializers.NoticeSerializer(notice, context=serializer_context)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        test_all_model_attributes(self, payload, info, info_serializer)
+        test_all_model_attributes(self, payload, notice, notice_serializer)
