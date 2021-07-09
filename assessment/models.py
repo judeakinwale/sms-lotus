@@ -42,7 +42,7 @@ class Answer(models.Model):
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
-    is_correct = models.BooleanField(False)
+    is_correct = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("Answer")
@@ -65,12 +65,12 @@ class QuizTaker(models.Model):
         verbose_name_plural = _("QuizTakers")
 
     def __str__(self):
-        return self.quiz
+        return self.quiz.name
 
 
 class Response(models.Model):
 
-    quiztaker = models.ForeignKey(QuizTaker, on_delete=models.CASCADE)
+    quiz_taker = models.ForeignKey(QuizTaker, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, null=True, blank=True)
 
