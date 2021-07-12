@@ -1,47 +1,6 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from assessment import models
-
-
-class QuizSerializer(serializers.HyperlinkedModelSerializer):
-    """serializer for the Quiz model"""
-    supervisor = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = models.Quiz
-        fields = [
-            'id',
-            'url',
-            'supervisor',
-            'name',
-            'question_count',
-            'description',
-            'is_active',
-            'timestamp',
-        ]
-        extra_kwargs = {
-            'url': {'view_name': 'assessment:quiz-detail'}
-        }
-
-
-class QuestionSerializer(serializers.HyperlinkedModelSerializer):
-    """serializer for the Question model"""
-    quiz = serializers.HyperlinkedRelatedField(
-        queryset=models.Quiz.objects.all(),
-        view_name='assessment:quiz-detail',
-    )
-
-    class Meta:
-        model = models.Question
-        fields = [
-            'id',
-            'url',
-            'quiz',
-            'label',
-            'order',
-        ]
-        extra_kwargs = {
-            'url': {'view_name': 'assessment:question-detail'}
-        }
 
 
 class AnswerSerializer(serializers.HyperlinkedModelSerializer):
@@ -66,9 +25,55 @@ class AnswerSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class QuestionSerializer(serializers.HyperlinkedModelSerializer):
+    """serializer for the Question model"""
+    quiz = serializers.HyperlinkedRelatedField(
+        queryset=models.Quiz.objects.all(),
+        view_name='assessment:quiz-detail',
+    )
+    # answer_set = AnswerSerializer(many=True)
+
+    class Meta:
+        model = models.Question
+        fields = [
+            'id',
+            'url',
+            'quiz',
+            'label',
+            # 'answer_set',
+            'order',
+        ]
+        extra_kwargs = {
+            'url': {'view_name': 'assessment:question-detail'}
+        }
+
+
+class QuizSerializer(serializers.HyperlinkedModelSerializer):
+    """serializer for the Quiz model"""
+    supervisor = serializers.PrimaryKeyRelatedField(read_only=True)
+    # question_set = QuestionSerializer(many=True)
+
+    class Meta:
+        model = models.Quiz
+        fields = [
+            'id',
+            'url',
+            'supervisor',
+            'name',
+            'question_count',
+            # 'question_set',
+            'description',
+            'is_active',
+            'timestamp',
+        ]
+        extra_kwargs = {
+            'url': {'view_name': 'assessment:quiz-detail'}
+        }
+
+
 class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the QuizTaker model"""
-    student = serializers.PrimaryKeyRelatedField(read_only=True)
+    student = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     quiz = serializers.HyperlinkedRelatedField(
         queryset=models.Quiz.objects.all(),
         view_name='assessment:quiz-detail',

@@ -10,6 +10,9 @@ class QuizViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.QuizSerializer
     permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
 
+    def perform_create(self, serializer):
+        return serializer.save(supervisor=self.request.user)
+
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = models.Question.objects.all()
@@ -27,6 +30,9 @@ class QuizTakerViewSet(viewsets.ModelViewSet):
     queryset = models.QuizTaker.objects.all()
     serializer_class = serializers.QuizTakerSerializer
     permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
+
+    def perform_create(self, serializer):
+        return serializer.save(student=self.request.user)
 
 
 class ResponseViewSet(viewsets.ModelViewSet):
