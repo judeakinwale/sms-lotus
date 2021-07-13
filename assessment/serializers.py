@@ -59,6 +59,7 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'supervisor',
+            'course',
             'name',
             'question_count',
             # 'question_set',

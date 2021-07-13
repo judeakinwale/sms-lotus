@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from academics.models import Course
 
 # Create your models here.
 
@@ -9,6 +10,7 @@ class Quiz(models.Model):
     """Model definition for Quiz."""
 
     supervisor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     question_count = models.IntegerField(default=0)
     description = models.TextField(null=True, blank=True)
@@ -100,3 +102,27 @@ class Response(models.Model):
     def __str__(self):
         """String representation of Response."""
         return self.question.label
+
+
+class Grade(models.Model):
+    """Model definition for Grade."""
+
+    score = models.IntegerField()
+    max_score = models.IntegerField()
+
+    class Meta:
+        """Meta definition for Grade."""
+
+        verbose_name = _('Grade')
+        verbose_name_plural = _('Grades')
+
+    def __str__(self):
+        """String representation of Grade."""
+        return f"{self.score} of {self.max_score}"
+
+    def get_value(self):
+        if self.score/self.max_score >= 0.5:
+            return 'Pass'
+        else:
+            return 'Fail'
+
