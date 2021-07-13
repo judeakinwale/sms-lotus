@@ -72,6 +72,11 @@ class ScopeSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'id',
             'url',
+            'faculty',
+            'departmment',
+            'programme',
+            'course',
+            'level',
             'description',
             'is_general',
             'is_first_year',
