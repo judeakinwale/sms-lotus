@@ -10,7 +10,7 @@ class Quiz(models.Model):
     """Model definition for Quiz."""
 
     supervisor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=250)
     question_count = models.IntegerField(default=0)
     description = models.TextField(null=True, blank=True)

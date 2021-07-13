@@ -77,7 +77,6 @@ class PrivateQuestionApiTest(TestCase):
             password='testpass'
         )
         self.client.force_authenticate(self.user)
-        self.client.force_authenticate(self.user)
         self.quiz = sample_quiz(supervisor=self.user)
 
     def tearDown(self):
