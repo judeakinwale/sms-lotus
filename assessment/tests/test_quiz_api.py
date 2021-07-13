@@ -85,31 +85,32 @@ class PrivateQuizApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_quiz_limited_to_supervisor(self):
-        """test that quiz from a specified supervisor is returned"""
-        sample_quiz(supervisor=self.user)
-        user2 = get_user_model().objects.create_user(
-            'test2@test.com',
-            'testpass2'
-        )
-        quiz = sample_quiz(supervisor=user2, name='Test Quiz 3')
+    # # TODO:
+    # def test_quiz_limited_to_supervisor(self):
+    #     """test that quiz from a specified supervisor is returned"""
+    #     sample_quiz(supervisor=self.user)
+    #     user2 = get_user_model().objects.create_user(
+    #         'test2@test.com',
+    #         'testpass2'
+    #     )
+    #     quiz = sample_quiz(supervisor=user2, name='Test Quiz 3')
 
-        quizzes = models.Quiz.objects.filter(supervisor=self.user)
-        serializer = serializers.QuizSerializer(quizzes, many=True, context=serializer_context)
+    #     quizzes = models.Quiz.objects.filter(supervisor=self.user)
+    #     serializer = serializers.QuizSerializer(quizzes, many=True, context=serializer_context)
         
-        res = self.client.get(QUIZ_URL)
+    #     res = self.client.get(QUIZ_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), 1)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(res.data, serializer.data)
+    #     self.assertEqual(len(res.data), 1)
 
-    def test_retrieve_quiz_detail(self):
-        """test retrieving a quiz's detail"""
-        quiz = sample_quiz(supervisor=self.user)
-        serializer = serializers.QuizSerializer(quiz, context=serializer_context)
+    # def test_retrieve_quiz_detail(self):
+    #     """test retrieving a quiz's detail"""
+    #     quiz = sample_quiz(supervisor=self.user)
+    #     serializer = serializers.QuizSerializer(quiz, context=serializer_context)
         
-        url = quiz_detail_url(quiz_id=quiz.id)
-        res = self.client.get(url)
+    #     url = quiz_detail_url(quiz_id=quiz.id)
+    #     res = self.client.get(url)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
