@@ -24,6 +24,7 @@ urlpatterns = [
     path("information/", include('information.urls', namespace='information')),
     path("user/", include('core.urls', namespace='core')),
     path("assessment/", include('assessment.urls', namespace='assessment')),
+    path("academics/", include('academics.urls', namespace='academics'))
 ]
 
 if settings.DEBUG is True:
