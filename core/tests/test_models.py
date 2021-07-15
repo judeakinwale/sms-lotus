@@ -153,9 +153,9 @@ class ModelTest(TestCase):
         )
         quiz_taker = amodels.QuizTaker.objects.create(
             student=self.user,
-            quiz=quiz,
         )
-        self.assertEqual(str(quiz_taker), quiz_taker.quiz.name)
+        quiz_taker.quiz.add(quiz)
+        self.assertEqual(str(quiz_taker), str(quiz_taker.student))
 
     def test_response_str(self):
         """test the response str representation"""
@@ -166,7 +166,6 @@ class ModelTest(TestCase):
         )
         quiz_taker = amodels.QuizTaker.objects.create(
             student=self.user,
-            quiz=quiz,
         )
         question = amodels.Question.objects.create(
             quiz = quiz,
