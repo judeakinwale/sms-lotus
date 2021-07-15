@@ -61,7 +61,7 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
             'supervisor',
             'course',
             'name',
-            'question_count',
+            'max_score',
             # 'question_set',
             'description',
             'is_active',
@@ -75,10 +75,10 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
 class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the QuizTaker model"""
     student = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
-    quiz = serializers.HyperlinkedRelatedField(
-        queryset=models.Quiz.objects.all(),
-        view_name='assessment:quiz-detail',
-    )
+    # quiz = serializers.HyperlinkedRelatedField(
+    #     queryset=models.Quiz.objects.all(),
+    #     view_name='assessment:quiz-detail',
+    # )
 
     class Meta:
         model = models.QuizTaker
@@ -87,7 +87,7 @@ class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'student',
             'quiz',
-            'correct_answer',
+            'grade',
             'completed',
             'timestamp',
         ]
@@ -123,3 +123,26 @@ class ResponseSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'assessment:response-detail'}
         }
+
+
+class GradeSerializer(serializers.HyperlinkedModelSerializer):
+    """serializer for the Grade model"""
+    quiz = serializers.HyperlinkedRelatedField(
+        queryset=models.Quiz.objects.all(),
+        view_name='assessment:quiz-detail',
+    )
+
+    class Meta:
+        model = models.Grade
+        fields = [
+            'id',
+            'url',
+            'quiz',
+            'score',
+            'max_score',
+            'timestamp',
+        ]
+        extra_kwargs = {
+            'url': {'view_name': 'assessment:quiztaker-detail'}
+        }
+

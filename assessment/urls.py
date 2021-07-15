@@ -10,6 +10,8 @@ router.register('question', views.QuestionViewSet)
 router.register('answer', views.AnswerViewSet)
 router.register('quizTaker', views.QuizTakerViewSet)
 router.register('response', views.ResponseViewSet)
+router.register('grade', views.GradeViewSet)
+
 
 urlpatterns = [
     path("", include(router.urls)),

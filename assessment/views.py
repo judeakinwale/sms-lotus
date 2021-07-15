@@ -39,3 +39,9 @@ class ResponseViewSet(viewsets.ModelViewSet):
     queryset = models.Response.objects.all()
     serializer_class = serializers.ResponseSerializer
     permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
+
+
+class GradeViewSet(viewsets.ModelViewSet):
+    queryset = models.Grade.objects.all()
+    serializer_class = serializers.GradeSerializer
+    permission_classes = [permissions.IsAuthenticated | permissions.IsAdminUser]
