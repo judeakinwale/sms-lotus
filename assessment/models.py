@@ -71,8 +71,8 @@ class QuizTaker(models.Model):
     """Model definition for QuizTaker."""
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    quiz = models.ManyToManyField(Quiz)
-    grade = models.ManyToManyField("Grade")
+    quiz = models.ManyToManyField(Quiz, blank=True)
+    grade = models.ManyToManyField("Grade", blank=True)
     completed = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 

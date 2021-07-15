@@ -75,10 +75,16 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
 class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the QuizTaker model"""
     student = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
-    # quiz = serializers.HyperlinkedRelatedField(
-    #     queryset=models.Quiz.objects.all(),
-    #     view_name='assessment:quiz-detail',
-    # )
+    quiz = serializers.HyperlinkedRelatedField(
+        queryset=models.Quiz.objects.all(),
+        many=True,
+        view_name='assessment:quiz-detail',
+    )
+    grade = serializers.HyperlinkedRelatedField(
+        queryset=models.Grade.objects.all(),
+        many=True,
+        view_name='assessment:grade-detail',
+    )
 
     class Meta:
         model = models.QuizTaker
