@@ -154,7 +154,6 @@ class PrivateQuizApiTest(TestCase):
         payload = {
             'supervisor': self.user,
             'name': 'Test name 3',
-            'question_count': 3,
         }
 
         url = quiz_detail_url(quiz.id)

@@ -32,7 +32,9 @@ def sample_quiz_taker(student, quiz, **kwargs):
     """create and return a sample quiz_taker"""
     defaults = {}
     defaults.update(kwargs)
-    return models.QuizTaker.objects.create(student=student, quiz=quiz, **defaults)
+    quiz_taker = models.QuizTaker.objects.create(student=student, **defaults)
+    quiz_taker.quiz.add(quiz)
+    return quiz_taker
 
 
 # def sample_quiz_taker_image(quiz_taker, **kwargs):
@@ -129,7 +131,7 @@ class PrivateQuizTakerApiTest(TestCase):
         quiz_serializer = serializers.QuizSerializer(self.quiz, context=serializer_context)
         payload = {
             'student': self.user.id,
-            'quiz': quiz_serializer.data['url'],
+            'quiz': [quiz_serializer.data['url'],],
         }
 
         res = self.client.post(QUIZTAKER_URL, payload)
@@ -143,10 +145,8 @@ class PrivateQuizTakerApiTest(TestCase):
     def test_partial_update_quiz_taker(self):
         """test partially updating a quiz_taker's detail using patch"""
         quiz_taker = sample_quiz_taker(student=self.user, quiz=self.quiz)
-        quiz = sample_quiz(supervisor=self.user)
-        quiz_serializer = serializers.QuizSerializer(quiz, context=serializer_context)
         payload = {
-            'quiz': quiz_serializer.data['url'],
+            'completed': True,
         }
 
         url = quiz_taker_detail_url(quiz_taker.id)
@@ -165,7 +165,7 @@ class PrivateQuizTakerApiTest(TestCase):
         quiz_serializer = serializers.QuizSerializer(quiz, context=serializer_context)
         payload = {
             'student': self.user.id,
-            'quiz': quiz_serializer.data['url'],
+            'quiz': [quiz_serializer.data['url'],]
         }
 
         url = quiz_taker_detail_url(quiz_taker.id)
