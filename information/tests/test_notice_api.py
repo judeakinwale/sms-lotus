@@ -99,7 +99,7 @@ class PrivateNoticeApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_notice_not_limited_to_source(self):
-        """test that notice from all sources is returned"""
+        """test that notices from all sources is returned"""
         sample_notice(source=self.user)
         user2 = get_user_model().objects.create_user(
             'test2@test.com',
@@ -117,7 +117,7 @@ class PrivateNoticeApiTest(TestCase):
         self.assertEqual(len(res.data), 2)
 
     def test_retrieve_notice_detail(self):
-        """test retrieving an notice's detail"""
+        """test retrieving a notice's detail"""
         notice = sample_notice(source=self.user)
         serializer = serializers.NoticeSerializer(notice, context=serializer_context)
         
@@ -128,10 +128,10 @@ class PrivateNoticeApiTest(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_create_notice(self):
-        """test creating an notice"""
+        """test creating a notice"""
         scope_serializer = serializers.ScopeSerializer(sample_scope(), context=serializer_context)
         payload = {
-            'source': self.user,
+            'source': self.user.id,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 2',
             'message': 'message for test title 2',
@@ -146,7 +146,7 @@ class PrivateNoticeApiTest(TestCase):
         test_all_model_attributes(self, payload, notice, notice_serializer)
 
     def test_partial_update_notice(self):
-        """test partially updating an notice's detail using patch"""
+        """test partially updating a notice's detail using patch"""
         notice = sample_notice(source=self.user)
         scope = sample_scope(description='Private', is_general=False)
         scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
@@ -165,12 +165,12 @@ class PrivateNoticeApiTest(TestCase):
         test_all_model_attributes(self, payload, notice, notice_serializer)
 
     def test_full_update_notice(self):
-        """test updating an notice's detail using put"""
+        """test updating a notice's detail using put"""
         notice = sample_notice(source=self.user)
         scope = sample_scope(description='Private test', is_first_year=True)
         scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
         payload = {
-            'source': self.user,
+            'source': self.user.id,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 3',
             'message': 'An updated message'

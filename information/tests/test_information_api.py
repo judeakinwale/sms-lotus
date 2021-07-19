@@ -131,7 +131,7 @@ class PrivateInformationApiTest(TestCase):
         """test creating an information"""
         scope_serializer = serializers.ScopeSerializer(sample_scope(), context=serializer_context)
         payload = {
-            'source': self.user,
+            'source': self.user.id,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 2',
             'body': 'body for test title 2',
@@ -170,7 +170,7 @@ class PrivateInformationApiTest(TestCase):
         scope = sample_scope(description='Private test', is_first_year=True)
         scope_serializer = serializers.ScopeSerializer(scope, context=serializer_context)
         payload = {
-            'source': self.user,
+            'source': self.user.id,
             'scope': scope_serializer.data['url'],
             'title': 'Test title 3',
             'body': 'An updated body'
