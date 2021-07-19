@@ -5,6 +5,7 @@ from assessment import models
 
 class AnswerSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Answer model"""
+
     question = serializers.HyperlinkedRelatedField(
         queryset=models.Question.objects.all(),
         view_name='assessment:question-detail',
@@ -19,7 +20,6 @@ class AnswerSerializer(serializers.HyperlinkedModelSerializer):
             'text',
             'is_correct',
         ]
-        # read_only_fields = ['id']
         extra_kwargs = {
             'url': {'view_name': 'assessment:answer-detail'}
         }
@@ -27,11 +27,12 @@ class AnswerSerializer(serializers.HyperlinkedModelSerializer):
 
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Question model"""
+
     quiz = serializers.HyperlinkedRelatedField(
         queryset=models.Quiz.objects.all(),
         view_name='assessment:quiz-detail',
     )
-    # answer_set = AnswerSerializer(many=True)
+    answer_set = AnswerSerializer(many=True, allow_null=True, required=False)
 
     class Meta:
         model = models.Question
@@ -40,7 +41,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'quiz',
             'label',
-            # 'answer_set',
+            'answer_set',
             'order',
         ]
         extra_kwargs = {
@@ -50,8 +51,9 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
 
 class QuizSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Quiz model"""
-    supervisor = serializers.PrimaryKeyRelatedField(read_only=True)
-    # question_set = QuestionSerializer(many=True)
+
+    supervisor = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    question_set = QuestionSerializer(many=True, allow_null=True, required=False)
 
     class Meta:
         model = models.Quiz
@@ -62,7 +64,7 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
             'course',
             'name',
             'max_score',
-            # 'question_set',
+            'question_set',
             'description',
             'is_active',
             'timestamp',
@@ -74,6 +76,7 @@ class QuizSerializer(serializers.HyperlinkedModelSerializer):
 
 class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the QuizTaker model"""
+
     student = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     quiz = serializers.HyperlinkedRelatedField(
         queryset=models.Quiz.objects.all(),
@@ -104,6 +107,7 @@ class QuizTakerSerializer(serializers.HyperlinkedModelSerializer):
 
 class ResponseSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Response model"""
+
     quiz_taker = serializers.HyperlinkedRelatedField(
         queryset=models.QuizTaker.objects.all(),
         view_name='assessment:quiz_taker-detail',
@@ -115,6 +119,8 @@ class ResponseSerializer(serializers.HyperlinkedModelSerializer):
     answer = serializers.HyperlinkedRelatedField(
         queryset=models.Answer.objects.all(),
         view_name='assessment:answer-detail',
+        allow_null=True,
+        required=False,
     )
 
     class Meta:
@@ -133,6 +139,7 @@ class ResponseSerializer(serializers.HyperlinkedModelSerializer):
 
 class GradeSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Grade model"""
+
     quiz = serializers.HyperlinkedRelatedField(
         queryset=models.Quiz.objects.all(),
         view_name='assessment:quiz-detail',
@@ -151,4 +158,3 @@ class GradeSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'assessment:quiztaker-detail'}
         }
-

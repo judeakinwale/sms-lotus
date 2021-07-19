@@ -1,4 +1,4 @@
-from django.db.models import fields
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from academics import models
 
@@ -6,6 +6,7 @@ from academics import models
 class FacultySerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Faculty model"""
 
+    dean = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all(), allow_null=True, required=False)
     class Meta:
         model = models.Faculty
         fields = [
@@ -24,6 +25,7 @@ class FacultySerializer(serializers.HyperlinkedModelSerializer):
 class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
     """serializer for the Department model"""
 
+    head = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all(), allow_null=True, required=False)
     faculty = serializers.HyperlinkedRelatedField(
         queryset=models.Faculty.objects.all(),
         view_name='academics:faculty-detail',
