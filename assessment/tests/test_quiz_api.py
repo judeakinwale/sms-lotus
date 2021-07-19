@@ -118,7 +118,7 @@ class PrivateQuizApiTest(TestCase):
     def test_create_quiz(self):
         """test creating a quiz"""
         payload = {
-            'supervisor': self.user,
+            'supervisor': self.user.id,
             'name': 'Test name 2',
         }
 
@@ -135,7 +135,7 @@ class PrivateQuizApiTest(TestCase):
         quiz = sample_quiz(supervisor=self.user)
         quiz_serializer = serializers.QuizSerializer(quiz, context=serializer_context)
         payload = {
-            'supervisor': self.user,
+            'supervisor': self.user.id,
             'name': 'An updated name'
         }
 
@@ -152,7 +152,7 @@ class PrivateQuizApiTest(TestCase):
         """test updating a quiz's detail using put"""
         quiz = sample_quiz(supervisor=self.user)
         payload = {
-            'supervisor': self.user,
+            'supervisor': self.user.id,
             'name': 'Test name 3',
         }
 
