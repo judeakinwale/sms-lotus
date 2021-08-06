@@ -34,6 +34,8 @@ class Department(models.Model):
     code = models.CharField(max_length=250, null=True, blank=True, unique=True)
     description = models.TextField(null=True, blank=True)
     head = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    # lecturers = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    # students = models.ManyToManyField(settings.AUTH_USER_MODEL)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
@@ -78,6 +80,7 @@ class Course(models.Model):
     code = models.CharField(max_length=250, null=True, blank=True, unique=True)
     description = models.TextField(null=True, blank=True)
     coordinator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    # lecturers = models.ManyToManyField(settings.AUTH_USER_MODEL)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
