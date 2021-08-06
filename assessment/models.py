@@ -14,6 +14,7 @@ class Quiz(models.Model):
     name = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
     max_score = models.IntegerField(default=10)
+    grade = models.ForeignKey('Grade', on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
@@ -108,9 +109,9 @@ class Response(models.Model):
 class Grade(models.Model):
     """Model definition for Grade."""
 
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
-    score = models.IntegerField()
-    max_score = models.IntegerField()
+    # quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
+    score = models.IntegerField(null=True, blank=True)
+    max_score = models.IntegerField(default=10)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     class Meta:
